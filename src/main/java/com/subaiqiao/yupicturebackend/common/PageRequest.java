@@ -2,11 +2,13 @@ package com.subaiqiao.yupicturebackend.common;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 分页对象
  */
 @Data
-public class PageRequest {
+public class PageRequest implements Serializable {
 
     /**
      * 当前页码
