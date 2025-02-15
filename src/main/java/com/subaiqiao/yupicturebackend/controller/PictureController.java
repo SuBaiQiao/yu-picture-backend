@@ -16,6 +16,7 @@ import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
 import com.subaiqiao.yupicturebackend.manager.CosManager;
+import com.subaiqiao.yupicturebackend.model.dto.picture.PictureEditRequest;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureQueryRequest;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUpdateRequest;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUploadRequest;
@@ -153,16 +154,16 @@ public class PictureController {
 
     /**
      * 更新用户
-     * @param pictureUpdateRequest 更新用户信息
+     * @param pictureEditRequest 更新用户信息
      * @return 更新成功
      */
     @PostMapping("/edit")
-    public BaseResponse<String> editPicture(@RequestBody PictureUpdateRequest pictureUpdateRequest, HttpServletRequest request){
-        ThrowUtils.throwIf(ObjUtil.isNull(pictureUpdateRequest) || pictureUpdateRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
+    public BaseResponse<String> editPicture(@RequestBody PictureEditRequest pictureEditRequest, HttpServletRequest request){
+        ThrowUtils.throwIf(ObjUtil.isNull(pictureEditRequest) || pictureEditRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
         User user = userService.getLoginUser(request);
         Picture picture = new Picture();
-        BeanUtil.copyProperties(pictureUpdateRequest, picture);
-        picture.setTags(JSONUtil.toJsonStr(pictureUpdateRequest.getTags()));
+        BeanUtil.copyProperties(pictureEditRequest, picture);
+        picture.setTags(JSONUtil.toJsonStr(pictureEditRequest.getTags()));
         picture.setEditTime(new Date());
         pictureService.validPicture(picture);
         if (!picture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
