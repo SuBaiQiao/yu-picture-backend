@@ -161,12 +161,14 @@ public class PictureController {
     public BaseResponse<String> editPicture(@RequestBody PictureEditRequest pictureEditRequest, HttpServletRequest request){
         ThrowUtils.throwIf(ObjUtil.isNull(pictureEditRequest) || pictureEditRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
         User user = userService.getLoginUser(request);
+        Picture oldPicture = pictureService.getById(pictureEditRequest.getId());
+        ThrowUtils.throwIf(ObjUtil.isNull(oldPicture), ErrorCode.NOT_FOUND);
         Picture picture = new Picture();
         BeanUtil.copyProperties(pictureEditRequest, picture);
         picture.setTags(JSONUtil.toJsonStr(pictureEditRequest.getTags()));
         picture.setEditTime(new Date());
         pictureService.validPicture(picture);
-        if (!picture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
+        if (!oldPicture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
         boolean result = pictureService.updateById(picture);
