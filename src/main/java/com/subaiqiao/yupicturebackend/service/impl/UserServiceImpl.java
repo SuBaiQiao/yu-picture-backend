@@ -202,9 +202,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String sortOrder = userQueryRequest.getSortOrder();
 
         queryWrapper.eq(ObjUtil.isNotEmpty(id), "id", id);
-        queryWrapper.eq(ObjUtil.isNotEmpty(userName), "userName", userName);
-        queryWrapper.eq(ObjUtil.isNotEmpty(userAccount), "userAccount", userAccount);
-        queryWrapper.eq(ObjUtil.isNotEmpty(userProfile), "userProfile", userProfile);
+        queryWrapper.like(ObjUtil.isNotEmpty(userName), "userName", userName);
+        queryWrapper.like(ObjUtil.isNotEmpty(userAccount), "userAccount", userAccount);
+        queryWrapper.like(ObjUtil.isNotEmpty(userProfile), "userProfile", userProfile);
         queryWrapper.eq(ObjUtil.isNotEmpty(userRole), "userRole", userRole);
         queryWrapper.orderBy(StrUtil.isNotBlank(sortField), sortOrder.equals("ascend"), sortField);
 
