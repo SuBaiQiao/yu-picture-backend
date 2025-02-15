@@ -59,8 +59,8 @@ public class PictureController {
      * @return 文件上传结果
      */
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    @PostMapping("/upload")
-    public BaseResponse<PictureVO> testUploadFile(@RequestPart("file")MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
+    @PostMapping("/uploadPicture")
+    public BaseResponse<PictureVO> uploadPicture(@RequestPart("file")MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         return ResultUtils.success(pictureService.uploadPicture(multipartFile, pictureUploadRequest, userService.getLoginUser(request)));
     }
 
