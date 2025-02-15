@@ -49,7 +49,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+<!--        腾讯云对象存储-->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.6.227</version>
+        </dependency>
 <!--        https://doc.hutool.cn/pages/index/#%F0%9F%8D%8Amaven-->
         <dependency>
             <groupId>cn.hutool</groupId>

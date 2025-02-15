@@ -6,6 +6,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
+  profiles:
+    active: local
+  # 文件上传的最大体积
+  servlet:
+    multipart:
+      max-file-size: 10MB
 server:
   servlet:
     context-path: /api
