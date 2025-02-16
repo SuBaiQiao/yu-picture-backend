@@ -69,7 +69,7 @@ public class PictureController {
      * @return 文件上传结果
      */
     @PostMapping("/upload/url")
-    public BaseResponse<PictureVO> uploadPicture(PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
+    public BaseResponse<PictureVO> uploadPictureByUrl(PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         return ResultUtils.success(pictureService.uploadPicture(pictureUploadRequest.getFileUrl(), pictureUploadRequest, userService.getLoginUser(request)));
     }
 
