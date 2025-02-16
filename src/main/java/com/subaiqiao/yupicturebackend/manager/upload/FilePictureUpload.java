@@ -37,6 +37,6 @@ public class FilePictureUpload extends PictureUploadTemplate {
         String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
         // 允许上传的文件后缀列表
         final List<String> ALLOW_SUFFIX_LIST = List.of("jpg", "jpeg", "png", "gif", "webp");
-        ThrowUtils.throwIf(!ALLOW_SUFFIX_LIST.contains(fileSuffix), ErrorCode.PARAMS_ERROR, "不支持的文件格式");
+        ThrowUtils.throwIf(!ALLOW_SUFFIX_LIST.contains(fileSuffix.toLowerCase()), ErrorCode.PARAMS_ERROR, "不支持的文件格式");
     }
 }

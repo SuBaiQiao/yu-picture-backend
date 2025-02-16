@@ -15,6 +15,7 @@ public class PictureVO implements Serializable {
     private static final long serialVersionUID = -2332566483960628369L;
     private Long id;
     private String url;
+    private String thumbnailUrl;
     private String name;
     private String introduction;
     private List<String> tags;

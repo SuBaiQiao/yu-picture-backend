@@ -247,12 +247,21 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     private static Picture getPicture(User loginUser, UploadPictureResult uploadPictureResult, Long pictureId) {
         Picture picture = new Picture();
         picture.setUrl(uploadPictureResult.getUrl());
+        // 设置文件名称
         picture.setName(uploadPictureResult.getPicName());
+        // 设置文件大小
         picture.setPicSize(uploadPictureResult.getPicSize());
+        // 设置宽度
         picture.setPicWidth(uploadPictureResult.getPicWidth());
+        // 设置高度
         picture.setPicHeight(uploadPictureResult.getPicHeight());
+        // 设置宽高比
         picture.setPicScale(uploadPictureResult.getPicScale());
+        // 设置文件格式
         picture.setPicFormat(uploadPictureResult.getPicFormat());
+        // 设置缩略图地址
+        picture.setThumbnailUrl(uploadPictureResult.getThumbnailUrl());
+        // 设置上传用户
         picture.setUserId(loginUser.getId());
         // 操作数据库
         // 如果pictureId不为空，表示更新，否则就是新增
