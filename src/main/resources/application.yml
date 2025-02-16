@@ -14,6 +14,11 @@ spring:
     timeout: 5000
   profiles:
     active: local
+  #Session
+  session:
+    store-type: redis
+    # Session 30天后过期 60 * 60 * 24 * 30
+    timeout: 2592000
   # 文件上传的最大体积
   servlet:
     multipart:
@@ -21,6 +26,9 @@ spring:
 server:
   servlet:
     context-path: /api
+    session:
+      cookie:
+        max-age: 2592000 # Session 30天后过期
   port: 8080
 
 mybatis-plus:
