@@ -2,10 +2,7 @@ package com.subaiqiao.yupicturebackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureQueryRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureReviewRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUploadByBatchRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUploadRequest;
+import com.subaiqiao.yupicturebackend.model.dto.picture.*;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicturebackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -65,6 +62,11 @@ public interface PictureService extends IService<Picture> {
      */
     void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
 
+    /**
+     * 填充审核参数
+     * @param picture 图片信息
+     * @param loginUser 登录用户
+     */
     void fillReviewParams(Picture picture, User loginUser);
 
     /**
@@ -80,4 +82,25 @@ public interface PictureService extends IService<Picture> {
      * @param picture 需要删除的图片
      */
     void clearPicture(Picture picture);
+
+    /**
+     * 校验空间图片的权限
+     * @param loginUser 登录用户
+     * @param picture 图片
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
+
+    /**
+     * 删除图片
+     * @param pictureId 图片ID
+     * @param loginUser 登录用户
+     */
+    void deletePicture(long pictureId, User loginUser);
+
+    /**
+     * 编辑图片
+     * @param pictureEditRequest 编辑请求内容
+     * @param loginUser 登录用户
+     */
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
 }

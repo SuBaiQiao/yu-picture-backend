@@ -95,5 +95,8 @@ public class PictureQueryRequest extends PageRequest implements Serializable {
 
     private String searchText;
 
+    private Long spaceId;
+    private boolean nullSpaceId;
+
     private static final long serialVersionUID = 1L;
 }

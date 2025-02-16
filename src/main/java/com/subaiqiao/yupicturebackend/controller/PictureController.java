@@ -18,11 +18,13 @@ import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
 import com.subaiqiao.yupicturebackend.model.dto.picture.*;
 import com.subaiqiao.yupicturebackend.model.entity.Picture;
+import com.subaiqiao.yupicturebackend.model.entity.Space;
 import com.subaiqiao.yupicturebackend.model.entity.User;
 import com.subaiqiao.yupicturebackend.model.enums.PictureReviewStatusEnum;
 import com.subaiqiao.yupicturebackend.model.vo.PictureTagCategory;
 import com.subaiqiao.yupicturebackend.model.vo.PictureVO;
 import com.subaiqiao.yupicturebackend.service.PictureService;
+import com.subaiqiao.yupicturebackend.service.SpaceService;
 import com.subaiqiao.yupicturebackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -48,6 +50,9 @@ public class PictureController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private SpaceService spaceService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -90,16 +95,7 @@ public class PictureController {
     @PostMapping("/delete")
     public BaseResponse<String> deletePicture(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request){
         ThrowUtils.throwIf(ObjUtil.isNull(deleteRequest) || deleteRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
-        User user = userService.getLoginUser(request);
-        Picture picture = pictureService.getById(deleteRequest.getId());
-        ThrowUtils.throwIf(ObjUtil.isNull(picture), ErrorCode.NOT_FOUND);
-        if (!picture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
-        boolean result = pictureService.removeById(deleteRequest.getId());
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        // 清理图片资源
-        pictureService.clearPicture(picture);
+        pictureService.deletePicture(deleteRequest.getId(), userService.getLoginUser(request));
         return ResultUtils.success("ok");
     }
 
@@ -148,10 +144,11 @@ public class PictureController {
      */
 
     @PostMapping("/get/vo")
-    public BaseResponse<PictureVO> getPictureVOById(@RequestParam long id) {
+    public BaseResponse<PictureVO> getPictureVOById(@RequestParam long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
         Picture picture = pictureService.getById(id);
         ThrowUtils.throwIf(ObjUtil.isNull(picture), ErrorCode.NOT_FOUND);
+        pictureService.checkPictureAuth(userService.getLoginUser(request), picture);
         return ResultUtils.success(pictureService.getPictureVO(picture));
     }
 
@@ -180,21 +177,7 @@ public class PictureController {
     @PostMapping("/edit")
     public BaseResponse<String> editPicture(@RequestBody PictureEditRequest pictureEditRequest, HttpServletRequest request){
         ThrowUtils.throwIf(ObjUtil.isNull(pictureEditRequest) || pictureEditRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
-        User user = userService.getLoginUser(request);
-        Picture oldPicture = pictureService.getById(pictureEditRequest.getId());
-        ThrowUtils.throwIf(ObjUtil.isNull(oldPicture), ErrorCode.NOT_FOUND);
-        Picture picture = new Picture();
-        BeanUtil.copyProperties(pictureEditRequest, picture);
-        picture.setTags(JSONUtil.toJsonStr(pictureEditRequest.getTags()));
-        picture.setEditTime(new Date());
-        // 补充审核参数
-        pictureService.fillReviewParams(picture, user);
-        pictureService.validPicture(picture);
-        if (!oldPicture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
-        boolean result = pictureService.updateById(picture);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        pictureService.editPicture(pictureEditRequest, userService.getLoginUser(request));
         return ResultUtils.success("ok");
     }
 
@@ -211,8 +194,22 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫每次最大获取20条
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        // 图片用户只允许看到审核通过的数据
-        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        // 空间权限校验
+        Long spaceId = pictureQueryRequest.getSpaceId();
+        if (ObjUtil.isNull(spaceId)) {
+            // 图片用户只允许看到审核通过的数据
+            pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+            // 公开图片
+            pictureQueryRequest.setNullSpaceId(true);
+        } else {
+            // 私有空间
+            User loginUser = userService.getLoginUser(request);
+            Space space = spaceService.getById(spaceId);
+            ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND, "空间不存在");
+            if (!loginUser.getId().equals(space.getUserId())) {
+                throw new BusinessException(ErrorCode.ACCESS_DENIED);
+            }
+        }
         // 分页查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
         // 封装VO
@@ -232,8 +229,22 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫每次最大获取20条
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        // 图片用户只允许看到审核通过的数据
-        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        // 空间权限校验
+        Long spaceId = pictureQueryRequest.getSpaceId();
+        if (ObjUtil.isNull(spaceId)) {
+            // 图片用户只允许看到审核通过的数据
+            pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+            // 公开图片
+            pictureQueryRequest.setNullSpaceId(true);
+        } else {
+            // 私有空间
+            User loginUser = userService.getLoginUser(request);
+            Space space = spaceService.getById(spaceId);
+            ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND, "空间不存在");
+            if (!loginUser.getId().equals(space.getUserId())) {
+                throw new BusinessException(ErrorCode.ACCESS_DENIED);
+            }
+        }
         // 查询缓存，缓存中没有在去查询数据库
         // 构建缓存的key
         String queryCondition = JSONUtil.toJsonStr(pictureQueryRequest);
