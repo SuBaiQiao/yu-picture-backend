@@ -16,14 +16,12 @@ import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
 import com.subaiqiao.yupicturebackend.manager.CosManager;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureEditRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureQueryRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUpdateRequest;
-import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUploadRequest;
+import com.subaiqiao.yupicturebackend.model.dto.picture.*;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserUpdateRequest;
 import com.subaiqiao.yupicturebackend.model.entity.Picture;
 import com.subaiqiao.yupicturebackend.model.entity.User;
+import com.subaiqiao.yupicturebackend.model.enums.PictureReviewStatusEnum;
 import com.subaiqiao.yupicturebackend.model.vo.PictureTagCategory;
 import com.subaiqiao.yupicturebackend.model.vo.PictureVO;
 import com.subaiqiao.yupicturebackend.model.vo.UserVO;
@@ -59,7 +57,6 @@ public class PictureController {
      * @param request 请求头
      * @return 文件上传结果
      */
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     @PostMapping("/uploadPicture")
     public BaseResponse<PictureVO> uploadPicture(@RequestPart("file")MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         return ResultUtils.success(pictureService.uploadPicture(multipartFile, pictureUploadRequest, userService.getLoginUser(request)));
@@ -92,13 +89,15 @@ public class PictureController {
      */
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<String> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest){
+    public BaseResponse<String> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest, HttpServletRequest request){
         ThrowUtils.throwIf(ObjUtil.isNull(pictureUpdateRequest) || pictureUpdateRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
         Picture oldPicture = pictureService.getById(pictureUpdateRequest.getId());
         ThrowUtils.throwIf(ObjUtil.isNull(oldPicture), ErrorCode.NOT_FOUND);
         Picture picture = new Picture();
         BeanUtil.copyProperties(pictureUpdateRequest, picture);
         picture.setTags(JSONUtil.toJsonStr(pictureUpdateRequest.getTags()));
+        // 补充审核参数
+        pictureService.fillReviewParams(picture, userService.getLoginUser(request));
         pictureService.validPicture(picture);
         boolean result = pictureService.updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -167,6 +166,8 @@ public class PictureController {
         BeanUtil.copyProperties(pictureEditRequest, picture);
         picture.setTags(JSONUtil.toJsonStr(pictureEditRequest.getTags()));
         picture.setEditTime(new Date());
+        // 补充审核参数
+        pictureService.fillReviewParams(picture, user);
         pictureService.validPicture(picture);
         if (!oldPicture.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
@@ -187,8 +188,13 @@ public class PictureController {
         ThrowUtils.throwIf(ObjUtil.isNull(pictureQueryRequest), ErrorCode.PARAMS_ERROR);
         long current = pictureQueryRequest.getCurrent();
         long size = pictureQueryRequest.getPageSize();
+        // 限制爬虫每次最大获取20条
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 图片用户只允许看到审核通过的数据
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        // 分页查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
+        // 封装VO
         return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
     }
 
@@ -204,6 +210,20 @@ public class PictureController {
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
+    }
+
+    /**
+     * 审核图片
+     * @param pictureReviewRequest 审核信息
+     * @param request 请求头信息
+     * @return 审核完成
+     */
+    @PostMapping("/review")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<String> doReviewPicture(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(ObjUtil.isNull(pictureReviewRequest), ErrorCode.PARAMS_ERROR);
+        pictureService.doPictureReview(pictureReviewRequest, userService.getLoginUser(request));
+        return ResultUtils.success("ok");
     }
 
 }

@@ -3,6 +3,7 @@ package com.subaiqiao.yupicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureQueryRequest;
+import com.subaiqiao.yupicturebackend.model.dto.picture.PictureReviewRequest;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureUploadRequest;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicturebackend.model.entity.Picture;
@@ -55,4 +56,13 @@ public interface PictureService extends IService<Picture> {
      * @return 转换后的查询条件
      */
     QueryWrapper<Picture> getQueryWrapper(PictureQueryRequest pictureQueryRequest);
+
+    /**
+     * 图片审核
+     * @param pictureReviewRequest 图片审核信息
+     * @param loginUser 登录用户
+     */
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    void fillReviewParams(Picture picture, User loginUser);
 }
