@@ -2,6 +2,8 @@ package com.subaiqiao.yupicturebackend.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qcloud.cos.model.COSObject;
@@ -28,6 +30,9 @@ import com.subaiqiao.yupicturebackend.model.vo.UserVO;
 import com.subaiqiao.yupicturebackend.service.PictureService;
 import com.subaiqiao.yupicturebackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/picture")
@@ -49,6 +55,9 @@ public class PictureController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 图片上传
@@ -207,6 +216,44 @@ public class PictureController {
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
         // 封装VO
         return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
+    }
+
+    /**
+     * 分页获取用户列表（有缓存）
+     * @param pictureQueryRequest 查询条件
+     * @param request 请求头信息
+     * @return 用户列表
+     */
+    @PostMapping("/list/page/vo/cache")
+    public BaseResponse<Page<PictureVO>> listPictureVOByPageCache(@RequestBody PictureQueryRequest pictureQueryRequest, HttpServletRequest request){
+        ThrowUtils.throwIf(ObjUtil.isNull(pictureQueryRequest), ErrorCode.PARAMS_ERROR);
+        long current = pictureQueryRequest.getCurrent();
+        long size = pictureQueryRequest.getPageSize();
+        // 限制爬虫每次最大获取20条
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 图片用户只允许看到审核通过的数据
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
+        // 查询缓存，缓存中没有在去查询数据库
+        // 构建缓存的key
+        String queryCondition = JSONUtil.toJsonStr(pictureQueryRequest);
+        String hashKey = DigestUtils.md5DigestAsHex(queryCondition.getBytes());
+        String redisKey = String.format("yupicture:listPictureVOByPage:%s", hashKey);
+        ValueOperations<String, String> opsForValue = stringRedisTemplate.opsForValue();
+        String cacheValue = opsForValue.get(redisKey);
+        if (StrUtil.isNotBlank(cacheValue)) {
+            Page<PictureVO> pictureVOPage = JSONUtil.toBean(cacheValue, Page.class, true);
+            return ResultUtils.success(pictureVOPage);
+        }
+        // 分页查询数据库
+        Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
+        // 封装VO
+        Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
+        // 写入缓存中，5-10分钟有效期，防止缓存雪崩
+        if (pictureVOPage.getTotal() > 0) {
+            int cacheExpireTime = 300 + RandomUtil.randomInt(0, 300);
+            opsForValue.set(redisKey, JSONUtil.toJsonStr(pictureVOPage), cacheExpireTime, TimeUnit.SECONDS);
+        }
+        return ResultUtils.success(pictureVOPage);
     }
 
     /**
