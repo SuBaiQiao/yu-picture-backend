@@ -5,10 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class PictureUploadRequest implements Serializable {
+public class PictureUploadByBatchRequest implements Serializable {
     private static final long serialVersionUID = -7953305185256045180L;
-    private Long id;
-    private String fileUrl;
-    private String picName;
+    private String searchText;
+    private Integer count = 10;
+    private String namePrefix;
 
 }

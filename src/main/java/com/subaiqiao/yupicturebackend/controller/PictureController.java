@@ -237,4 +237,17 @@ public class PictureController {
         return ResultUtils.success("ok");
     }
 
+    /**
+     * 批量爬取图片
+     * @param pictureUploadByBatchRequest 批量配置信息
+     * @param request 请求体
+     * @return 插入数量
+     */
+    @PostMapping("/upload/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Integer> uploadPictureByBatch(@RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(ObjUtil.isNull(pictureUploadByBatchRequest), ErrorCode.PARAMS_ERROR);
+        return ResultUtils.success(pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, userService.getLoginUser(request)));
+    }
+
 }
