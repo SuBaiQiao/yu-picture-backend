@@ -162,10 +162,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             boolean result = this.saveOrUpdate(picture);
             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "图片上传失败，数据库操作失败");
             // 更新空间的使用额度
-            boolean update = spaceService.lambdaUpdate().eq(Space::getId, finalSpaceId)
-                    .setSql("totalSize = totalSize + " + picture.getPicSize())
-                    .setSql("totalCount = totalCount + 1").update();
-            ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+            if (ObjUtil.isNotEmpty(finalSpaceId)) {
+                boolean update = spaceService.lambdaUpdate().eq(Space::getId, finalSpaceId)
+                        .setSql("totalSize = totalSize + " + picture.getPicSize())
+                        .setSql("totalCount = totalCount + 1").update();
+                ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+            }
             return picture;
         });
         return PictureVO.objToVo(picture);
@@ -492,7 +494,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 补充审核参数
         this.fillReviewParams(picture, loginUser);
         this.validPicture(picture);
-        this.checkPictureAuth(loginUser, picture);
+        this.checkPictureAuth(loginUser, oldPicture);
         boolean result = this.updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
     }
