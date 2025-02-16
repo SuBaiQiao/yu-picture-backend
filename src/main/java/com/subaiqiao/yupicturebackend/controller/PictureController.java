@@ -62,6 +62,17 @@ public class PictureController {
         return ResultUtils.success(pictureService.uploadPicture(multipartFile, pictureUploadRequest, userService.getLoginUser(request)));
     }
 
+    /**
+     * URL图片上传
+     * @param pictureUploadRequest 业务信息
+     * @param request 请求头
+     * @return 文件上传结果
+     */
+    @PostMapping("/upload/url")
+    public BaseResponse<PictureVO> uploadPicture(PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
+        return ResultUtils.success(pictureService.uploadPicture(pictureUploadRequest.getFileUrl(), pictureUploadRequest, userService.getLoginUser(request)));
+    }
+
 
     /**
      * 删除图片

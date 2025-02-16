@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
-import com.subaiqiao.yupicturebackend.manager.FileManager;
+import com.subaiqiao.yupicturebackend.manager.upload.FilePictureUpload;
+import com.subaiqiao.yupicturebackend.manager.upload.PictureUploadTemplate;
+import com.subaiqiao.yupicturebackend.manager.upload.UrlPictureUpload;
 import com.subaiqiao.yupicturebackend.model.dto.file.UploadPictureResult;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureQueryRequest;
 import com.subaiqiao.yupicturebackend.model.dto.picture.PictureReviewRequest;
@@ -24,7 +26,6 @@ import com.subaiqiao.yupicturebackend.service.PictureService;
 import com.subaiqiao.yupicturebackend.mapper.PictureMapper;
 import com.subaiqiao.yupicturebackend.service.UserService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,10 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     implements PictureService{
 
     @Resource
-    private FileManager fileManager;
+    private FilePictureUpload filePictureUpload;
+
+    @Resource
+    private UrlPictureUpload uploadPicture;
 
     @Resource
     private UserService userService;
@@ -66,7 +70,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     }
 
     @Override
-    public PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser) {
+    public PictureVO uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
         // 校验参数
         ThrowUtils.throwIf(loginUser == null, ErrorCode.NOT_LOGIN_ERROR);
         // 判断新增还是修改
@@ -85,7 +89,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 上传图片
         // 按照用户ID划分目录
         String uploadPathPrefix = String.format("public/%s", loginUser.getId());
-        UploadPictureResult uploadPictureResult = fileManager.uploadPicture(multipartFile, uploadPathPrefix);
+        // 根据inputSource的类型区分文件上传的方式
+        PictureUploadTemplate pictureUploadTemplate = filePictureUpload;
+        if (inputSource instanceof String) {
+            pictureUploadTemplate = uploadPicture;
+        }
+        UploadPictureResult uploadPictureResult = pictureUploadTemplate.uploadPicture(inputSource, uploadPathPrefix);
         // 构造入库的图片信息
         Picture picture = getPicture(loginUser, uploadPictureResult, pictureId);
         // 补充审核参数
