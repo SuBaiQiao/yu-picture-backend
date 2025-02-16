@@ -79,4 +79,16 @@ public class CosManager {
         putObjectRequest.setPicOperations(picOperations);
         return cosClient.putObject(putObjectRequest);
     }
+
+    /**
+     * 从COS中删除文件
+     * @param key 唯一键
+     */
+    public void deleteObject(String key) {
+        String prefix = cosClientConfig.getHost() + "/";
+        if (key.startsWith(prefix)) {
+            key = key.substring(prefix.length());
+        }
+        cosClient.deleteObject(cosClientConfig.getBucket(), key);
+    }
 }

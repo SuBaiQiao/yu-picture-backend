@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
+import com.subaiqiao.yupicturebackend.manager.CosManager;
 import com.subaiqiao.yupicturebackend.manager.upload.FilePictureUpload;
 import com.subaiqiao.yupicturebackend.manager.upload.PictureUploadTemplate;
 import com.subaiqiao.yupicturebackend.manager.upload.UrlPictureUpload;
@@ -31,6 +32,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -60,6 +62,9 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private CosManager cosManager;
 
     @Override
     public void validPicture(Picture picture) {
@@ -343,6 +348,27 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             }
         }
         return uploadCount;
+    }
+
+    /**
+     * 清理图片文件
+     * @param picture 需要删除的图片
+     */
+    @Async
+    @Override
+    public void clearPicture(Picture picture) {
+        // 判断该图片是否被多条记录使用
+        String pictureUrl = picture.getUrl();
+        long count = this.lambdaQuery().eq(Picture::getUrl, pictureUrl)
+                .count();
+        if (count > 1) {
+            return;
+        }
+        cosManager.deleteObject(pictureUrl);
+        String thumbnailUrl = picture.getThumbnailUrl();
+        if (StrUtil.isNotBlank(thumbnailUrl) && !thumbnailUrl.equals(pictureUrl)) {
+            cosManager.deleteObject(thumbnailUrl);
+        }
     }
 }
 
