@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.subaiqiao.yupicturebackend.annotation.AuthCheck;
+import com.subaiqiao.yupicturebackend.api.imagesearch.ImageSearchApiFacade;
+import com.subaiqiao.yupicturebackend.api.imagesearch.model.ImageSearchResult;
 import com.subaiqiao.yupicturebackend.common.BaseResponse;
 import com.subaiqiao.yupicturebackend.common.DeleteRequest;
 import com.subaiqiao.yupicturebackend.common.ResultUtils;
@@ -392,6 +394,21 @@ public class PictureController {
     public BaseResponse<Integer> uploadPictureByBatch(@RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(ObjUtil.isNull(pictureUploadByBatchRequest), ErrorCode.PARAMS_ERROR);
         return ResultUtils.success(pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, userService.getLoginUser(request)));
+    }
+
+    /**
+     * 以图搜图
+     * @param searchPictureByPictureRequest 图片信息
+     * @param request 请求头信息
+     * @return 以图搜图所查询到的图片信息
+     */
+    @PostMapping("/search/picture")
+    public BaseResponse<List<ImageSearchResult>> searchPictureByPicture(@RequestBody SearchPictureByPictureRequest searchPictureByPictureRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(ObjUtil.isNull(searchPictureByPictureRequest) || searchPictureByPictureRequest.getPictureId() <= 0, ErrorCode.PARAMS_ERROR);
+        Long pictureId = searchPictureByPictureRequest.getPictureId();
+        Picture picture = pictureService.getById(pictureId);
+        ThrowUtils.throwIf(ObjUtil.isNull(picture), ErrorCode.NOT_FOUND);
+        return ResultUtils.success(ImageSearchApiFacade.searchImage(picture.getUrl()));
     }
 
 }
