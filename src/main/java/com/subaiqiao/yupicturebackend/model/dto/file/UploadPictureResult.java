@@ -12,4 +12,8 @@ public class UploadPictureResult {
     private int picHeight;
     private double picScale;
     private String picFormat;
+    /**
+     * 图片主色调
+     */
+    private String picColor;
 }

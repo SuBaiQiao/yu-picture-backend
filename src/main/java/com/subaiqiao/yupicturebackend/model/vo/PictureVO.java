@@ -25,6 +25,10 @@ public class PictureVO implements Serializable {
     private Integer picHeight;
     private Double picScale;
     private String picFormat;
+    /**
+     * 图片主色调
+     */
+    private String picColor;
     private Long userId;
     private Long spaceId;
     private Date createTime;

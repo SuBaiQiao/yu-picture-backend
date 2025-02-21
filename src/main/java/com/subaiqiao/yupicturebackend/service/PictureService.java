@@ -11,6 +11,7 @@ import com.subaiqiao.yupicturebackend.model.vo.PictureVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 12947
@@ -103,4 +104,13 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser 登录用户
      */
     void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
+    /**
+     * 根据图片颜色搜索图片
+     * @param spaceId 空间ID
+     * @param picColor 需要匹配的颜色
+     * @param loginUser 登录用户
+     * @return 所查询到符合结果的图片信息
+     */
+    List<PictureVO> searchPictureByColor(Long spaceId, String picColor, User loginUser);
 }
