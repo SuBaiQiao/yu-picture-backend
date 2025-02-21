@@ -543,6 +543,64 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 转换封装类后返回
         return sortedPictureList.stream().map(PictureVO::objToVo).collect(Collectors.toList());
     }
+
+    @Override
+    public void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser) {
+        // 获取和校验参数
+        ThrowUtils.throwIf(ObjUtil.isNull(pictureEditByBatchRequest), ErrorCode.PARAMS_ERROR);
+        List<Long> pictureIdList = pictureEditByBatchRequest.getPictureIdList();
+        Long spaceId = pictureEditByBatchRequest.getSpaceId();
+        String category = pictureEditByBatchRequest.getCategory();
+        List<String> tags = pictureEditByBatchRequest.getTags();
+        String nameRule = pictureEditByBatchRequest.getNameRule();
+        ThrowUtils.throwIf(CollUtil.isEmpty(pictureIdList), ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(ObjUtil.isNull(loginUser), ErrorCode.NOT_LOGIN_ERROR);
+        // 校验权限
+        if (ObjUtil.isNotEmpty(spaceId)) {
+            Space space = spaceService.getById(spaceId);
+            ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND);
+            ThrowUtils.throwIf(!space.getUserId().equals(loginUser.getId()), ErrorCode.ACCESS_DENIED);
+        }
+        // 查询指定图片（仅查询需要的字段）
+        List<Picture> pictureList = this.lambdaQuery().select(Picture::getId, Picture::getSpaceId).in(Picture::getId, pictureIdList).list();
+        ThrowUtils.throwIf(CollUtil.isEmpty(pictureList), ErrorCode.NOT_FOUND);
+        // 更新分类和标签
+        pictureList.forEach(picture -> {
+            if (ObjUtil.isNotEmpty(spaceId)) {
+                picture.setSpaceId(spaceId);
+            }
+            if (StrUtil.isNotBlank(category)) {
+                picture.setCategory(category);
+            }
+            if (CollUtil.isNotEmpty(tags)) {
+                picture.setTags(JSONUtil.toJsonStr(tags));
+            }
+        });
+        // 批量重命名
+        fillPictureWithNameRule(pictureList, nameRule);
+        boolean result = this.updateBatchById(pictureList);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+    }
+
+    /**
+     * 根据规则批量重命名 格式：图片{序号}
+     * @param pictureList 图片列表
+     * @param nameRule 命名规则
+     */
+    private void fillPictureWithNameRule(List<Picture> pictureList, String nameRule) {
+        if (StrUtil.isBlank(nameRule) || CollUtil.isEmpty(pictureList)) {
+            return;
+        }
+        long count = 1;
+        try {
+            for (Picture picture : pictureList) {
+                String pictureName = nameRule.replaceAll("\\{序号}", String.valueOf(count++));
+                picture.setName(pictureName);
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "重命名异常");
+        }
+    }
 }
 
 
