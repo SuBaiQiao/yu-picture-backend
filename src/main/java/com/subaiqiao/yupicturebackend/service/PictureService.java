@@ -2,6 +2,7 @@ package com.subaiqiao.yupicturebackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.subaiqiao.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.subaiqiao.yupicturebackend.model.dto.picture.*;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicturebackend.model.entity.Picture;
@@ -120,4 +121,12 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser 登录用户
      */
     void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
+
+    /**
+     * 创建扩图任务
+     * @param createPictureOutPaintingTaskRequest 创建信息
+     * @param loginUser 登录用户
+     * @return 创建结果
+     */
+    CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 }
