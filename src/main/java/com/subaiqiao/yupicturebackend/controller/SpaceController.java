@@ -63,9 +63,7 @@ public class SpaceController {
         User user = userService.getLoginUser(request);
         Space space = spaceService.getById(deleteRequest.getId());
         ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND);
-        if (!space.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        spaceService.checkSpaceAuth(user, space);
         boolean result = spaceService.removeById(deleteRequest.getId());
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success("ok");
@@ -156,9 +154,7 @@ public class SpaceController {
         // 补充审核参数
         spaceService.fillSpaceBySpaceLevel(space);
         spaceService.validSpace(space, false);
-        if (!oldSpace.getUserId().equals(user.getId()) && !userService.isAdmin(user)) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        spaceService.checkSpaceAuth(user, oldSpace);
         boolean result = spaceService.updateById(space);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success("ok");
