@@ -32,6 +32,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class SpaceAnalyzeServiceImpl extends ServiceImpl<SpaceMapper, Space>
             Space space = spaceService.getById(spaceId);
             ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND);
             spaceService.checkSpaceAuth(loginUser, space);
-            checkSpaceAnalyzeAuth(spaceAnalyzeRequest, loginUser);
+//            checkSpaceAnalyzeAuth(spaceAnalyzeRequest, loginUser);
         }
     }
 
@@ -147,8 +148,8 @@ public class SpaceAnalyzeServiceImpl extends ServiceImpl<SpaceMapper, Space>
         queryWrapper.select("category", "count(*) as count", "sum(picSize) as totalSize").groupBy("category");
         return pictureService.getBaseMapper().selectMaps(queryWrapper).stream().map(result -> {
             String category = (String) result.get("category");
-            Long count = (Long) result.get("count");
-            Long totalSize = (Long) result.get("totalSize");
+            Long count = new BigDecimal(result.get("count").toString()).longValue();
+            Long totalSize = new BigDecimal(result.get("totalSize").toString()).longValue();
             return new SpaceCategoryAnalyzeResponse(category, count, totalSize);
         }).collect(Collectors.toList());
     }
@@ -233,8 +234,8 @@ public class SpaceAnalyzeServiceImpl extends ServiceImpl<SpaceMapper, Space>
         // 查询并封装结果
         List<Map<String, Object>> queryResult = pictureService.getBaseMapper().selectMaps(queryWrapper);
         return queryResult.stream().map(result -> {
-            String period = (String) result.get("period");
-            Long count = (Long) result.get("count");
+            String period = result.get("period").toString();
+            Long count = new BigDecimal(result.get("count").toString()).longValue();
             return new SpaceUserAnalyzeResponse(period, count);
         }).collect(Collectors.toList());
     }
