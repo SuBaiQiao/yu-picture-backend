@@ -44,7 +44,7 @@ public interface SpaceService extends IService<Space> {
      * @param space 原对象
      * @return 脱敏后的对象
      */
-    SpaceVO getSpaceVO(Space space);
+    SpaceVO getSpaceVO(Space space, HttpServletRequest request);
 
     /**
      * 获取查询条件

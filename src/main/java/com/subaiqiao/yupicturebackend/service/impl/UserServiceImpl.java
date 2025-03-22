@@ -10,6 +10,7 @@ import com.subaiqiao.yupicturebackend.constant.UserConstant;
 import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
+import com.subaiqiao.yupicturebackend.manager.auth.StpKit;
 import com.subaiqiao.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicturebackend.model.entity.User;
 import com.subaiqiao.yupicturebackend.model.enums.UserRoleEnum;
@@ -95,6 +96,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 保存用户登录状态
         request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        // 记录用户登录状态到Sa-token，便于空间鉴权时使用，注意保证该用户信息与 SpringSession 中的用户信息保持一致
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(UserConstant.USER_LOGIN_STATE, user);
         return this.getLoginUserVO(user);
     }
 

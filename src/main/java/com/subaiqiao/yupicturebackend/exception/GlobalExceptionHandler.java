@@ -1,5 +1,7 @@
 package com.subaiqiao.yupicturebackend.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import com.subaiqiao.yupicturebackend.common.BaseResponse;
 import com.subaiqiao.yupicturebackend.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,5 +22,17 @@ public class GlobalExceptionHandler {
     public BaseResponse<?> businessExceptionHandler(RuntimeException e) {
         log.error("BusinessException: " + e.getMessage(), e);
         return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
+    }
+
+    @ExceptionHandler(NotLoginException.class)
+    public BaseResponse<?> notLoginExceptionHandler(NotLoginException e) {
+        log.error("NotLoginException: " + e.getMessage(), e);
+        return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+    }
+
+    @ExceptionHandler(NotPermissionException.class)
+    public BaseResponse<?> notPermissionExceptionHandler(NotPermissionException e) {
+        log.error("NotPermissionException: " + e.getMessage(), e);
+        return ResultUtils.error(ErrorCode.ACCESS_DENIED);
     }
 }

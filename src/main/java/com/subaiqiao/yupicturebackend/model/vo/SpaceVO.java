@@ -2,14 +2,11 @@ package com.subaiqiao.yupicturebackend.model.vo;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.subaiqiao.yupicturebackend.model.entity.Picture;
 import com.subaiqiao.yupicturebackend.model.entity.Space;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +27,11 @@ public class SpaceVO implements Serializable {
      * 空间级别：0-普通版 1-专业版 2-旗舰版
      */
     private Integer spaceLevel;
+
+    /**
+     * 空间类型：0-私有 1-团队
+     */
+    private Integer spaceType;
 
     /**
      * 空间图片的最大总大小
@@ -72,6 +74,11 @@ public class SpaceVO implements Serializable {
     private Date updateTime;
 
     private UserVO user;
+
+    /**
+     * 权限列表
+     */
+    private List<String> permissionList = new ArrayList<>();
 
     /**
      * 封装类转对象

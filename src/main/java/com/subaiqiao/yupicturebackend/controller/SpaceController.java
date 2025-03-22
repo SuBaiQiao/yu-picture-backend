@@ -11,6 +11,7 @@ import com.subaiqiao.yupicturebackend.constant.UserConstant;
 import com.subaiqiao.yupicturebackend.exception.BusinessException;
 import com.subaiqiao.yupicturebackend.exception.ErrorCode;
 import com.subaiqiao.yupicturebackend.exception.ThrowUtils;
+import com.subaiqiao.yupicturebackend.manager.auth.SpaceUserAuthManager;
 import com.subaiqiao.yupicturebackend.model.dto.space.*;
 import com.subaiqiao.yupicturebackend.model.entity.Space;
 import com.subaiqiao.yupicturebackend.model.entity.User;
@@ -38,6 +39,9 @@ public class SpaceController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private SpaceUserAuthManager spaceUserAuthManager;
 
     /**
      * 创建空间
@@ -113,11 +117,14 @@ public class SpaceController {
      */
 
     @PostMapping("/get/vo")
-    public BaseResponse<SpaceVO> getSpaceVOById(@RequestParam long id) {
+    public BaseResponse<SpaceVO> getSpaceVOById(@RequestParam long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
         Space space = spaceService.getById(id);
         ThrowUtils.throwIf(ObjUtil.isNull(space), ErrorCode.NOT_FOUND);
-        return ResultUtils.success(spaceService.getSpaceVO(space));
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, userService.getLoginUser(request));
+        SpaceVO spaceVO = spaceService.getSpaceVO(space, request);
+        spaceVO.setPermissionList(permissionList);
+        return ResultUtils.success(spaceVO);
     }
 
     /**
