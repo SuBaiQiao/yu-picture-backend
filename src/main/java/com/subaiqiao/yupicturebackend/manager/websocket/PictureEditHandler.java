@@ -97,8 +97,9 @@ public class PictureEditHandler extends TextWebSocketHandler {
     public void handlerEnterEditMessage(PictureEditRequestMessage pictureEditRequestMessage, WebSocketSession session, User user, Long pictureId) throws IOException {
         // 没有用户正在编辑该图片，才能进入编辑
         if (!pictureEditUsers.containsKey(pictureId)) {
+            pictureEditUsers.put(pictureId, user.getId());
             PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
-            pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.INFO.getValue());
+            pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.ENTER_EDIT.getValue());
             String message = String.format("用户 %s 开始编辑图片", user.getUserName());
             pictureEditResponseMessage.setMessage(message);
             pictureEditResponseMessage.setUser(userService.getUserVO(user));
