@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.subaiqiao.yupicturebackend.mapper.SpaceUserMapper">
+<mapper namespace="com.subaiqiao.yupicture.infrastructure.mapper.SpaceUserMapper">
 
-    <resultMap id="BaseResultMap" type="com.subaiqiao.yupicturebackend.model.entity.SpaceUser">
+    <resultMap id="BaseResultMap" type="com.subaiqiao.yupicture.domain.space.entity.SpaceUser">
             <id property="id" column="id" />
             <result property="spaceId" column="spaceId" />
             <result property="userId" column="userId" />

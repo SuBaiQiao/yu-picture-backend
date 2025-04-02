@@ -1,6 +1,6 @@
 spring:
   application:
-    name: yu-picture-backend
+    name: yu-picture
   datasource:
     url: jdbc:mysql://localhost:3306/yu_picture
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -47,7 +47,7 @@ spring:
             type: CLASS_BASED
             props:
               strategy: standard
-              algorithmClassName: com.subaiqiao.yupicturebackend.manager.sharding.PictureShardingAlgorithm
+              algorithmClassName: com.subaiqiao.yupicture.shared.sharding.PictureShardingAlgorithm
     props:
       sql-show: true
 
@@ -80,4 +80,4 @@ knife4j:
       default:
         api-rule: package
         api-rule-resources:
-          - com.subaiqiao.yupicturebackend.controller
+          - com.subaiqiao.yupicture.interfaces.controller

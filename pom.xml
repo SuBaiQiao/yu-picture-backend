@@ -161,7 +161,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.subaiqiao.yupicturebackend.YuPictureBackendApplication</mainClass>
+                    <mainClass>com.subaiqiao.yupicture.YuPictureBackendApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>
