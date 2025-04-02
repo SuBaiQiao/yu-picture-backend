@@ -11,18 +11,17 @@ import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
 import cn.hutool.json.JSONUtil;
 import com.subaiqiao.yupicture.application.service.PictureApplicationService;
-import com.subaiqiao.yupicture.application.service.UserApplicationService;
-import com.subaiqiao.yupicture.infrastructure.exception.BusinessException;
-import com.subaiqiao.yupicture.infrastructure.exception.ErrorCode;
-import com.subaiqiao.yupicture.shared.auth.model.SpaceUserPermissionConstant;
+import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
+import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
 import com.subaiqiao.yupicture.domain.picture.entity.Picture;
 import com.subaiqiao.yupicture.domain.space.entity.Space;
 import com.subaiqiao.yupicture.domain.space.entity.SpaceUser;
-import com.subaiqiao.yupicture.domain.user.entity.User;
 import com.subaiqiao.yupicture.domain.space.valueobject.SpaceRoleEnum;
 import com.subaiqiao.yupicture.domain.space.valueobject.SpaceTypeEnum;
-import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
-import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
+import com.subaiqiao.yupicture.domain.user.entity.User;
+import com.subaiqiao.yupicture.infrastructure.exception.BusinessException;
+import com.subaiqiao.yupicture.infrastructure.exception.ErrorCode;
+import com.subaiqiao.yupicture.shared.auth.model.SpaceUserPermissionConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -45,9 +44,6 @@ public class StpInterfaceImpl implements StpInterface {
 
     @Resource
     private PictureApplicationService pictureApplicationService;
-
-    @Resource
-    private UserApplicationService userApplicationService;
 
     @Resource
     private SpaceApplicationService spaceApplicationService;

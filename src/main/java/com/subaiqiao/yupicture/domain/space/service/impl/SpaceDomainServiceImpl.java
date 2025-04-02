@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
 import com.subaiqiao.yupicture.application.service.UserApplicationService;
 import com.subaiqiao.yupicture.domain.space.entity.Space;
 import com.subaiqiao.yupicture.domain.space.entity.SpaceUser;
@@ -51,9 +50,6 @@ public class SpaceDomainServiceImpl implements SpaceDomainService {
 
     @Resource
     private UserApplicationService userApplicationService;
-
-    @Resource
-    private SpaceUserApplicationService spaceUserApplicationService;
 
 //    @Resource
 //    @Lazy

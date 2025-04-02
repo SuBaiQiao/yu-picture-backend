@@ -7,8 +7,6 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
-import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
-import com.subaiqiao.yupicture.application.service.UserApplicationService;
 import com.subaiqiao.yupicture.domain.space.entity.Space;
 import com.subaiqiao.yupicture.domain.space.service.SpaceDomainService;
 import com.subaiqiao.yupicture.domain.space.valueobject.SpaceLevelEnum;
@@ -37,12 +35,6 @@ import java.util.Set;
 */
 @Service
 public class SpaceApplicationServiceImpl implements SpaceApplicationService {
-
-    @Resource
-    private UserApplicationService userApplicationService;
-
-    @Resource
-    private SpaceUserApplicationService spaceUserApplicationService;
 
     @Resource
     private SpaceDomainService domainService;

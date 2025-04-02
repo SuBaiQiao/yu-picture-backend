@@ -4,13 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.subaiqiao.yupicture.domain.space.entity.Space;
 import com.subaiqiao.yupicture.domain.user.entity.User;
-import com.subaiqiao.yupicture.interfaces.dto.space.space.SpaceAddRequest;
 import com.subaiqiao.yupicture.interfaces.dto.space.space.SpaceQueryRequest;
 import com.subaiqiao.yupicture.interfaces.vo.space.SpaceVO;
-import org.jsoup.select.Elements;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

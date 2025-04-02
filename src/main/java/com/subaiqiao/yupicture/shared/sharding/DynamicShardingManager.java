@@ -1,10 +1,10 @@
 package com.subaiqiao.yupicture.shared.sharding;
 
 import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
+import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
 import com.subaiqiao.yupicture.domain.space.entity.Space;
 import com.subaiqiao.yupicture.domain.space.valueobject.SpaceLevelEnum;
 import com.subaiqiao.yupicture.domain.space.valueobject.SpaceTypeEnum;
-import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;

@@ -2,14 +2,9 @@ package com.subaiqiao.yupicture.domain.space.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.subaiqiao.yupicture.domain.space.entity.SpaceUser;
-import com.subaiqiao.yupicture.interfaces.dto.space.spaceuser.SpaceUserAddRequest;
 import com.subaiqiao.yupicture.interfaces.dto.space.spaceuser.SpaceUserQueryRequest;
-import com.subaiqiao.yupicture.interfaces.vo.space.SpaceUserVO;
 
-import javax.management.Query;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

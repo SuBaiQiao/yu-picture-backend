@@ -3,16 +3,15 @@ package com.subaiqiao.yupicture.shared.auth;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
+import com.subaiqiao.yupicture.domain.space.entity.Space;
+import com.subaiqiao.yupicture.domain.space.entity.SpaceUser;
+import com.subaiqiao.yupicture.domain.space.valueobject.SpaceRoleEnum;
+import com.subaiqiao.yupicture.domain.space.valueobject.SpaceTypeEnum;
+import com.subaiqiao.yupicture.domain.user.entity.User;
 import com.subaiqiao.yupicture.shared.auth.model.SpaceUserAuthConfig;
 import com.subaiqiao.yupicture.shared.auth.model.SpaceUserPermissionConstant;
 import com.subaiqiao.yupicture.shared.auth.model.SpaceUserRole;
-import com.subaiqiao.yupicture.domain.space.entity.Space;
-import com.subaiqiao.yupicture.domain.space.entity.SpaceUser;
-import com.subaiqiao.yupicture.domain.user.entity.User;
-import com.subaiqiao.yupicture.domain.space.valueobject.SpaceRoleEnum;
-import com.subaiqiao.yupicture.domain.space.valueobject.SpaceTypeEnum;
-import com.subaiqiao.yupicture.application.service.SpaceUserApplicationService;
-import com.subaiqiao.yupicture.application.service.UserApplicationService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -25,9 +24,6 @@ public class SpaceUserAuthManager {
 
     @Resource
     private SpaceUserApplicationService spaceUserApplicationService;
-
-    @Resource
-    private UserApplicationService userApplicationService;
 
     public static final SpaceUserAuthConfig SPACE_USER_AUTH_CONFIG;
 

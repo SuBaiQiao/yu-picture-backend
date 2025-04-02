@@ -6,19 +6,18 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.subaiqiao.yupicture.application.service.PictureApplicationService;
-import com.subaiqiao.yupicture.application.service.UserApplicationService;
+import com.subaiqiao.yupicture.application.service.SpaceAnalyzeApplicationService;
+import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
+import com.subaiqiao.yupicture.domain.picture.entity.Picture;
+import com.subaiqiao.yupicture.domain.space.entity.Space;
+import com.subaiqiao.yupicture.domain.user.entity.User;
 import com.subaiqiao.yupicture.infrastructure.exception.BusinessException;
 import com.subaiqiao.yupicture.infrastructure.exception.ErrorCode;
 import com.subaiqiao.yupicture.infrastructure.exception.ThrowUtils;
 import com.subaiqiao.yupicture.infrastructure.mapper.SpaceMapper;
 import com.subaiqiao.yupicture.interfaces.dto.space.space.analyze.*;
-import com.subaiqiao.yupicture.domain.picture.entity.Picture;
-import com.subaiqiao.yupicture.domain.space.entity.Space;
-import com.subaiqiao.yupicture.domain.user.entity.User;
 import com.subaiqiao.yupicture.interfaces.vo.space.SpaceVO;
 import com.subaiqiao.yupicture.interfaces.vo.space.space.analyze.*;
-import com.subaiqiao.yupicture.application.service.SpaceAnalyzeApplicationService;
-import com.subaiqiao.yupicture.application.service.SpaceApplicationService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,9 +35,6 @@ import java.util.stream.Collectors;
 @Service
 public class SpaceAnalyzeApplicationServiceImpl extends ServiceImpl<SpaceMapper, Space>
     implements SpaceAnalyzeApplicationService {
-
-    @Resource
-    private UserApplicationService userApplicationService;
 
     @Resource
     private SpaceApplicationService spaceApplicationService;
