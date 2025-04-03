@@ -12,10 +12,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @MapperScan("com.subaiqiao.yupicture.infrastructure.manager")
 // 开启AOP代理
 @EnableAspectJAutoProxy(exposeProxy = true)
-public class YuPictureBackendApplication {
+public class YuPictureApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(YuPictureBackendApplication.class, args);
+        SpringApplication.run(YuPictureApplication.class, args);
     }
 
 }
