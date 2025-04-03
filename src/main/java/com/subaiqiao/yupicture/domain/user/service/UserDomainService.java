@@ -96,4 +96,12 @@ public interface UserDomainService {
     boolean updateById(User user);
 
     Page<UserVO> listUserByPage(UserQueryRequest userQueryRequest);
+
+    /**
+     * 用户兑换会员
+     * @param user 用户
+     * @param code 会员码
+     * @return 兑换结果
+     */
+    boolean exchangeVip(User user, String code);
 }

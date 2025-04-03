@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.subaiqiao.yupicture.domain.user.entity.User;
 import com.subaiqiao.yupicture.interfaces.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicture.interfaces.dto.user.UserRegisterRequest;
+import com.subaiqiao.yupicture.interfaces.dto.user.VipExchangeRequest;
 import com.subaiqiao.yupicture.interfaces.vo.user.LoginUserVO;
 import com.subaiqiao.yupicture.interfaces.vo.user.UserVO;
 
@@ -95,4 +96,12 @@ public interface UserApplicationService {
     boolean updateById(User user);
 
     Page<UserVO> listUserByPage(UserQueryRequest userQueryRequest);
+
+    /**
+     * 会员兑换
+     * @param vipExchangeRequest 会员兑换信息
+     * @param httpServletRequest 用户登录信息
+     * @return 会员兑换结果
+     */
+    boolean exchangeVip(VipExchangeRequest vipExchangeRequest, HttpServletRequest httpServletRequest);
 }

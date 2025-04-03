@@ -15,6 +15,11 @@ public interface UserConstant {
      * 默认角色
      */
     String DEFAULT_ROLE = "user";
+
+    /**
+     * 会员角色
+     */
+    String VIP_ROLE = "vip";
     /**
      * 管理员角色
      */

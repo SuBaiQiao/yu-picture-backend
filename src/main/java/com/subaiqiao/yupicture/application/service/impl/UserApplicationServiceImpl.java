@@ -10,6 +10,7 @@ import com.subaiqiao.yupicture.infrastructure.exception.ErrorCode;
 import com.subaiqiao.yupicture.infrastructure.exception.ThrowUtils;
 import com.subaiqiao.yupicture.interfaces.dto.user.UserQueryRequest;
 import com.subaiqiao.yupicture.interfaces.dto.user.UserRegisterRequest;
+import com.subaiqiao.yupicture.interfaces.dto.user.VipExchangeRequest;
 import com.subaiqiao.yupicture.interfaces.vo.user.LoginUserVO;
 import com.subaiqiao.yupicture.interfaces.vo.user.UserVO;
 import lombok.extern.slf4j.Slf4j;
@@ -144,6 +145,13 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public Page<UserVO> listUserByPage(UserQueryRequest userQueryRequest) {
         return domainService.listUserByPage(userQueryRequest);
+    }
+
+    @Override
+    public boolean exchangeVip(VipExchangeRequest vipExchangeRequest, HttpServletRequest httpServletRequest) {
+        String vipCode = vipExchangeRequest.getVipCode();
+        User loginUser = getLoginUser(httpServletRequest);
+        return domainService.exchangeVip(loginUser, vipCode);
     }
 
 }
